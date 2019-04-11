@@ -1,4 +1,4 @@
-from flask import Flask, abort,jsonify, request
+from flask import Flask, abort,jsonify, request, make_response
 from flask_restful import Api, Resource
 
 app = Flask(__name__)
@@ -24,27 +24,30 @@ class hello(Resource):
 	def get(self):
 		helloStrip = 'Hello, world!'.rstrip()
 		if(len(request.args) == 0): 
-			return helloStrip
+			return make_response('Hello, world!', 200)
 		else:
-			raise InvalidUsage('Cannot GET request with string query', status_code = 406)
+			return make_response('Not Found',404)
+			#raise InvalidUsage('Cannot GET request with string query', status_code = 406)
 	def post(self):
-		raise InvalidUsage('This method is unsupported', status_code = 405)
+			return make_response('This method is unsupported', 405)
+		#raise InvalidUsage('This method is unsupported', status_code = 405)
 
 class test(Resource):
 	def get(self):
 		if(len(request.args) == 0):
-			return 'GET message received'
+			return make_response('GET message received',200)
 		else:
-			raise InvalidUsage('Cannot GET request with string query', status_code = 406)
+			return('Not Found',404)
+			#raise InvalidUsage('Cannot GET request with string query', status_code = 406)
 	def post(self):
 		if(len(request.args)==0):
-			raise InvalidUsage('This method is unsupported', status_code = 405)
+			return make_response('POST requests must be done with msg=',405)
 		else:
 			msg = request.args.get('msg')
 			if not msg:
-				raise InvalidUsage('POST requests must be done with msg=', status_code = 406)
+				return make_response('POST requests must be done with msg=',406)
 			else:
-				return 'POST message received: ' + msg
+				return make_response('POST message received: ' + msg, 200)
 
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
